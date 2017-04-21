@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  */
 public class SalariesMain {
     public static void main(String[] args) {
-        List<Salary> list = new ArrayList<>(); //container for Park objects.
+        List<Salary> list = new ArrayList<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader("src\\Salaries.csv"));
             String line = "";
@@ -30,18 +30,21 @@ public class SalariesMain {
                 list.add(new Salary(LocalDate.of(Integer.parseInt(splitted[0]), 1, 1),
                         splitted[1], splitted[2], splitted[3], Integer.parseInt(splitted[4])));
             }
-        } catch (IOException e) {
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
 
         //1.1900년대 평균연봉 구하기
         OptionalDouble average = list.stream()
-                .filter(x -> (x.getYearID().isAfter(LocalDate.of(1985, 1, 1))) &&
-                        (x.getYearID().isBefore(LocalDate.of(2000, 1, 1))))
+//                .filter(x -> (x.getYearID().isAfter(LocalDate.of(1985, 1, 1))) &&
+//                        (x.getYearID().isBefore(LocalDate.of(2000, 1, 1))))
+                .filter(x -> x.getYearID().getYear() < 2000) //위에 두줄을 한줄로
                 .mapToInt(a -> a.getSalary())
                 .average();
-        System.out.println(average.getAsDouble());
+        System.out.printf("1900년대 평균 연봉은 %.2f입니다.\n",average.getAsDouble());
 
         //2.전체 레코드의 평균연봉을 구하세요
         OptionalDouble averageOfAll = list.stream()
@@ -76,7 +79,6 @@ public class SalariesMain {
 
         //6.최상위연봉자 10명의 평균을 구하세요
         OptionalDouble avgBest10 = list.stream()
-
                 .sorted(((o2, o1) -> o1.getSalary() - o2.getSalary()))
                 .limit(10)
                 .mapToInt(a -> a.getSalary())
